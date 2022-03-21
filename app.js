@@ -1,28 +1,26 @@
 const express = require('express');
 var mysql = require('mysql')
 app = express()
+var morgan = require('morgan')
 require('dotenv').config();
-
+var mycon = require('express-myconnection')
 const api = require('./routes/methods')
-app.use('/api', api)
-app.use(express.urlencoded({ extended: false }))
-
-const con = mysql.createConnection({
-    host: "localhost",
+const dbinfo = {
+    host: '127.0.0.1',
     user: process.env.user,
     password: process.env.password,
     database: 'mysqlprac'
-});
+}
+app.use(morgan('dev'))
+app.use(mycon(mysql , dbinfo , 'single'))
+app.use(express.urlencoded({ extended: false }))
+app.use('/api', api)
 
-con.connect(function (err) {
-  if (err) throw err;
-  console.log("Connected to database ");
-  app.listen(3000, () => {
-    console.log('listening in port 3000');
-  })
-})
+// mysql.createConnection(dbinfo).connect(err=>console.log(err))
 
-
+app.listen(5000, ()=>(
+    console.log('started at 5000')
+))
 
 
 
@@ -35,6 +33,8 @@ con.connect(function (err) {
 //   })
 // }
 // )
+
+
 
 
 // app.get('/api', (req, res) => {
